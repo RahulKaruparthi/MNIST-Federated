@@ -12,7 +12,7 @@ import os
 import importlib
 import time
 
-dirname = os.path.dirname('D:/fincrime-federated/')
+dirname = os.path.dirname('/mnt/d/fincrime-federated/')
 os.chdir(dirname)
 print(os.getcwd())
 
