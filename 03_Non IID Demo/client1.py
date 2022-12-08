@@ -13,7 +13,11 @@ from tensorflow import keras
 # AUxillary methods
 
 
+<<<<<<< HEAD
 dirname = os.path.dirname("/mnt/d/fincrime-federated/")
+=======
+dirname = os.path.dirname('/mnt/d/fincrime-federated/')
+>>>>>>> 195876fb47a93943c29f0947d5cf614efafacf40
 os.chdir(dirname)
 print(os.getcwd())
 
