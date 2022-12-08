@@ -13,11 +13,11 @@ from tensorflow import keras
 # AUxillary methods
 
 
-<<<<<<< HEAD
-dirname = os.path.dirname("/mnt/d/fincrime-federated/")
-=======
+# <<<<<<< HEAD
+# dirname = os.path.dirname("/mnt/d/fincrime-federated/")
+# =======
 dirname = os.path.dirname('/mnt/d/fincrime-federated/')
->>>>>>> 195876fb47a93943c29f0947d5cf614efafacf40
+# >>>>>>> 195876fb47a93943c29f0947d5cf614efafacf40
 os.chdir(dirname)
 print(os.getcwd())
 
@@ -27,11 +27,11 @@ importlib.reload(funcs)
 
 start_time = time.time()
 
-model_dir = "D:/fincrime-federated/model/fincrime"
+model_dir = "/mnt/d/fincrime-federated/model/fincrime"
 preds_format_path = (
-    "D:/fincrime-federated/prediction/fincrime/prediction_format"
+    "/mnt/d/fincrime-federated/prediction/fincrime/prediction_format"
 )
-preds_dest_path = "D:/fincrime-federated/prediction/fincrime/prediction"
+preds_dest_path = "/mnt/d/fincrime-federated/prediction/fincrime/prediction"
 
 
 ## train on data
