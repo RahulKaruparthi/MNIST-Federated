@@ -1,0 +1,92 @@
+PS C:\Users\rahul.karuparthi> & C:/Users/rahul.karuparthi/Anaconda3/python.exe d:/fincrime-federated/submission_src/fincrime/__main__.py
+D:\fincrime-federated
+        SettlementAmount  InstructedAmount  Label  hour  Flags_ben  ...  DifferentBenName  DifferentOrderStreet  DifferentBenStreet  DifferentOrderZip  DifferentBenZip
+55850       1.556785e+08      1.742540e+08      1     8        0.0  ...                 0                     0                   0                  1                0
+157259      3.493100e+08      3.909895e+08      0    13        0.0  ...                 0                     0                   0                  1                1
+207017      4.183676e+07      4.682869e+07      0    21        0.0  ...                 0                     0                   0                  1                1
+
+[3 rows x 21 columns]
+Minimum: 0.8965896589658967
+Maximum: 0.9151450053705693
+StanDev: 0.00676791982799521
+xgboost Classification Report=
+
+               precision    recall  f1-score   support
+
+           0       1.00      1.00      1.00   4686825
+           1       0.98      0.88      0.93      4900
+
+    accuracy                           1.00   4691725
+   macro avg       0.99      0.94      0.96   4691725
+weighted avg       1.00      1.00      1.00   4691725
+
+xgboost Confusion Matrix=
+
+ [[4686726      99]
+ [    597    4303]]
+AUPRC: 0.9450791565504396
+SettlementAmount                         0.306986
+InstructedAmount                         0.027598
+hour                                     0.033975
+Flags_ben                                0.181937
+MissingBenAccount                        0.000000
+MissingOrdAccount                        0.004119
+Sender_hour_frequency                    0.015694
+Sender_Receiver_frequency                0.029288
+Sender_InstructedCurrency_frequency      0.038770
+seq                                      0.183283
+Receiver_SettlementCurrency_frequency    0.073993
+Receiver_hour_frequency                  0.014556
+DifferentOrderNum                        0.000000
+DifferentBenNum                          0.000000
+DifferentOrderName                       0.020059
+DifferentBenName                         0.020826
+DifferentOrderStreet                     0.009460
+DifferentBenStreet                       0.008964
+DifferentOrderZip                        0.014320
+DifferentBenZip                          0.016172
+dtype: float32
+        SettlementAmount  InstructedAmount  Label  hour  Flags_ben  ...  DifferentBenName  DifferentOrderStreet  DifferentBenStreet  DifferentOrderZip  DifferentBenZip
+682277      6.436390e+07      7.204376e+07      1     8        0.0  ...                 0                     1                   0                  1                0
+566543      1.613191e+08      1.805676e+08      1    20        0.0  ...                 0                     1                   0                  1                0
+60370       8.658029e+07      9.691100e+07      0     1       99.0  ...                 1                     1                   1                  1                1
+
+[3 rows x 21 columns]
+xgboost Classification Report=
+
+               precision    recall  f1-score   support
+
+           0       1.00      0.17      0.29    704347
+           1       0.00      1.00      0.00       761
+
+    accuracy                           0.17    705108
+   macro avg       0.50      0.58      0.15    705108
+weighted avg       1.00      0.17      0.29    705108
+
+xgboost Confusion Matrix=
+
+ [[119250 585097]
+ [     1    760]]
+AUPRC: 0.005075413987519733
+SettlementAmount                         0.306986
+InstructedAmount                         0.027598
+hour                                     0.033975
+Flags_ben                                0.181937
+MissingBenAccount                        0.000000
+MissingOrdAccount                        0.004119
+Sender_hour_frequency                    0.015694
+Sender_Receiver_frequency                0.029288
+Sender_InstructedCurrency_frequency      0.038770
+seq                                      0.183283
+Receiver_SettlementCurrency_frequency    0.073993
+Receiver_hour_frequency                  0.014556
+DifferentOrderNum                        0.000000
+DifferentBenNum                          0.000000
+DifferentOrderName                       0.020059
+DifferentBenName                         0.020826
+DifferentOrderStreet                     0.009460
+DifferentBenStreet                       0.008964
+DifferentOrderZip                        0.014320
+DifferentBenZip                          0.016172
+dtype: float32
+Total time taken  1204.0836582183838  seconds
