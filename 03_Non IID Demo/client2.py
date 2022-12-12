@@ -1,75 +1,78 @@
-import flwr as fl
-import tensorflow as tf
-from tensorflow import keras
-import sys
-import seaborn as sns
-import matplotlib.pyplot as plt
-import numpy as np
-
-# AUxillary methods
-
-import os
 import importlib
+import os
+import sys
 import time
 
-dirname = os.path.dirname('D:/fincrime-federated/')
-os.chdir(dirname)
-print(os.getcwd())
+import flwr as fl
+import matplotlib.pyplot as plt
+import numpy as np
+import seaborn as sns
+import tensorflow as tf
+from tensorflow import keras
+
 
 import submission_src.fincrime.solution_centralized as funcs
-importlib.reload(funcs) 
+importlib.reload(funcs)
+
+dirname = os.path.dirname('/mnt/d/fincrime-federated/')
+os.chdir(dirname)
+
 
 start_time = time.time()
 
-model_dir = 'D:/fincrime-federated/model/fincrime'
-preds_format_path = 'D:/fincrime-federated/prediction/fincrime/prediction_format'
-preds_dest_path = 'D:/fincrime-federated/prediction/fincrime/prediction'
+model_dir = "/mnt/d/fincrime-federated/model/fincrime"
+preds_format_path = (
+    "/mnt/d/fincrime-federated/prediction/fincrime/prediction_format"
+)
+preds_dest_path = "/mnt/d/fincrime-federated/prediction/fincrime/prediction"
 
 
 ## train on data
-datapathjsonString = 'data/fincrime/centralized/train/trail_data_2.json'
+datapathjsonString = "data/fincrime/centralized/train/trail_data_1.json"
+swift_data_path = funcs.json_to_dict(datapathjsonString)["swift_data_path"]
+bank_data_path = funcs.json_to_dict(datapathjsonString)["bank_data_path"]
+
+X_train,Y_train = funcs.fit(swift_data_path = swift_data_path,
+                    bank_data_path = bank_data_path,
+                    model_dir = model_dir,
+                    preds_format_path = preds_format_path,
+                    preds_dest_path = preds_dest_path,
+                    m = 'xgboost')
+
+
+# predict on test data
+datapathjsonString = 'data/fincrime/centralized/test/data.json'
 swift_data_path = funcs.json_to_dict(datapathjsonString)['swift_data_path']
 bank_data_path = funcs.json_to_dict(datapathjsonString)['bank_data_path']
 
-# predict on test data
+X_test,Y_test = funcs.predict(
+                    swift_data_path =swift_data_path,
+                    bank_data_path = bank_data_path,
+                    model_dir = model_dir,
+                    preds_format_path = preds_format_path,
+                    preds_dest_path = preds_dest_path,
+                    m = 'xgboost'
+                    )   
 
-#Define Flower client
+# Define Flower client
 class FlowerClient(fl.client.NumPyClient):
     def get_parameters(self,config):
         return model.get_weights()
 
-#     def fit(self, parameters, config):
-#         model.set_weights(parameters)
-#         r = model.fit(x_train, y_train, epochs=1, validation_data=(x_test, y_test), verbose=0)
-#         hist = r.history
-#         print("Fit history : " ,hist)
-#         return model.get_weights(), len(x_train), {}
-    def fit(self):       #, parameters, config):
-        result = funcs.fit(swift_data_path = swift_data_path,
-            bank_data_path = bank_data_path,
-            model_dir = model_dir,
-            preds_format_path = preds_format_path,
-            preds_dest_path = preds_dest_path,
-            m = 'xgboost')
-        return result
+    def fit(self, parameters, config):
+        model.set_weights(parameters)
+        r = model.fit(x_train, y_train, epochs=1, validation_data=(x_test, y_test), verbose=0)
+        hist = r.history
+        print("Fit history : " ,hist)
+        return model.get_weights(), len(x_train), {}
 
-#     def evaluate(self, parameters, config):
-    def evaluate(self):     #, parameters, config):
-#         model.set_weights(parameters)
-#         loss, accuracy = model.evaluate(x_test, y_test, verbose=0)
-#         print("Eval accuracy : ", accuracy)
-        result = funcs.predict(
-            swift_data_path =swift_data_path,
-            bank_data_path = bank_data_path,
-            model_dir = model_dir,
-            preds_format_path = preds_format_path,
-            preds_dest_path = preds_dest_path,
-            m = 'xgboost'
-            )  
-        #return loss, len(x_test), {"accuracy": accuracy}
-        return result
-    
-    # Start Flower client
+    def evaluate(self, parameters, config):
+        model.set_weights(parameters)
+        loss, accuracy = model.evaluate(x_test, y_test, verbose=0)
+        print("Eval accuracy : ", accuracy)
+        return loss, len(x_test), {"accuracy": accuracy}
+
+# Start Flower client
 fl.client.start_numpy_client(
         server_address="localhost:"+str(sys.argv[1]), 
         client=FlowerClient(), 
