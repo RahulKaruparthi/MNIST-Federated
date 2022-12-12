@@ -28,7 +28,7 @@ preds_dest_path = "/mnt/d/fincrime-federated/prediction/fincrime/prediction"
 
 
 ## train on data
-datapathjsonString = "data/fincrime/centralized/train/trail_data_1.json"
+datapathjsonString = "data/fincrime/centralized/train/trail_data_2.json"
 swift_data_path = funcs.json_to_dict(datapathjsonString)["swift_data_path"]
 bank_data_path = funcs.json_to_dict(datapathjsonString)["bank_data_path"]
 
@@ -41,7 +41,7 @@ X_train,Y_train = funcs.fit(swift_data_path = swift_data_path,
 
 
 # predict on test data
-datapathjsonString = 'data/fincrime/centralized/test/data.json'
+datapathjsonString = 'data/fincrime/centralized/test/trail_data2.json'
 swift_data_path = funcs.json_to_dict(datapathjsonString)['swift_data_path']
 bank_data_path = funcs.json_to_dict(datapathjsonString)['bank_data_path']
 
