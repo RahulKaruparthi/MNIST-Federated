@@ -13,11 +13,7 @@ from tensorflow import keras
 # AUxillary methods
 
 
-<<<<<<< HEAD
 dirname = os.path.dirname("/mnt/d/fincrime-federated/")
-=======
-dirname = os.path.dirname('/mnt/d/fincrime-federated/')
->>>>>>> 195876fb47a93943c29f0947d5cf614efafacf40
 os.chdir(dirname)
 print(os.getcwd())
 
@@ -43,8 +39,8 @@ bank_data_path = funcs.json_to_dict(datapathjsonString)["bank_data_path"]
 
 # Define Flower client
 class FlowerClient(fl.client.NumPyClient):
-    def get_parameters(self, config):
-        return model.get_weights()
+    # def get_parameters(self, config):
+    #     return model.get_weights()
 
     #     def fit(self, parameters, config):
     #         model.set_weights(parameters)
