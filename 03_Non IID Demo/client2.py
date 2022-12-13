@@ -54,14 +54,35 @@ x_test,y_test = funcs.predict(
                     m = 'xgboost'
                     )   
 
-# Load and compile Keras model
-model = keras.Sequential([
-    keras.layers.Flatten(input_shape=(28,28)),
-    keras.layers.Dense(128, activation='relu'),
-    keras.layers.Dense(256, activation='relu'),
-    keras.layers.Dense(10, activation='softmax')
-])
-model.compile("adam", "sparse_categorical_crossentropy", metrics=["accuracy"])
+# Fit the model on data
+model = funcs.train_model(X_train_data=X_train_data, Y_train_data = Y_train_data, m=m)
+
+# score on train data
+pred, pred_proba = funcs.score_data(train_data = train_data_2,X_train_data = X_train_data, Y_train_data = Y_train_data, model = model, m = m)
+
+# formatted predictions file
+preds = pd.read_csv(preds_format_path + '/train_pred_format.csv')#,index_col='MessageId')
+preds.loc[:,'Score'] = pred_proba
+
+# save below
+pickle.dump(scaler, open(model_dir + '/finalized_scaler_' + m + '.sav', 'wb'))
+pickle.dump(model, open(model_dir + '/finalized_model_' + m + '.sav', 'wb'))
+# preds.to_csv(preds_dest_path + '/centralized_train_predictions_' + m + '.csv')
+# model.compile("adam", "sparse_categorical_crossentropy", metrics=["accuracy"])
+
+
+# load the model from disk
+model = pickle.load(open(model_dir + '/finalized_model_' + m + '.sav', 'rb'))
+
+# score on train data
+pred, pred_proba = score_data(train_data = train_data_2, X_train_data = X_train_data, Y_train_data = Y_train_data, model = model, m=m)
+
+# format predictions file
+preds = pd.read_csv(preds_format_path + '/test_pred_format.csv')#,index_col='MessageId')
+preds.loc[:,'Score'] = pred_proba
+
+# save below
+preds.to_csv(preds_dest_path + '/centralized_test_predictions_' + m + '.csv')
 
 # Define Flower client
 class FlowerClient(fl.client.NumPyClient):
