@@ -39,6 +39,7 @@ x_train, y_train, model = funcs.fit(
     preds_format_path=preds_format_path,
     preds_dest_path=preds_dest_path,
     m="rf",
+    a=2,
 )
 
 
@@ -54,6 +55,7 @@ x_test, y_test = funcs.predict(
     preds_format_path=preds_format_path,
     preds_dest_path=preds_dest_path,
     m="rf",
+    a=2,
 )
 
 # # Fit the model on data
@@ -96,14 +98,14 @@ class FlowerClient(fl.client.NumPyClient):
         r = model.fit(
             x_train,
             y_train,
-            epochs=1,
-            validation_data=(x_test, y_test),
-            verbose=0,
+            # epochs=1,
+            # validation_data=(x_test, y_test),
+            # verbose=0,
         )
-        hist = r.history
-        print("Fit history : ", hist)
-        return len(x_train), {}
-        # return model.get_weights(), len(x_train), {}
+        # hist = r.history
+        # print("Fit history : ", hist)
+        # return len(x_train), {}
+        return model.get_weights(), len(x_train), {}
 
     def evaluate(self, parameters, config):
         # model.set_weights(parameters)

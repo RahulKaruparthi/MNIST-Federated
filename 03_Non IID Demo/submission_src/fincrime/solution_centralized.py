@@ -584,7 +584,7 @@ import pandas as pd
 import sklearn.utils
 from pandas import Int64Index, MultiIndex
 from sklearn import metrics
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import HistGradientBoostingClassifier
 from sklearn.metrics import (
     accuracy_score,
     classification_report,
@@ -822,10 +822,28 @@ def create_features(df, model_dir, map_from_train_set=False):
 def train_model(X_train_data, Y_train_data, m) -> None:
 
     if m == "rf":
-
-        model = RandomForestClassifier(
-            max_depth=7, random_state=0, n_estimators=10
+        model = HistGradientBoostingClassifier(
+            loss="log_loss",
+            learning_rate=0.1,
+            max_iter=10,
+            max_leaf_nodes=31,
+            max_depth=None,
+            min_samples_leaf=20,
+            l2_regularization=0.0,
+            max_bins=255,
+            warm_start=False,
+            early_stopping="auto",
+            scoring="loss",
+            validation_fraction=0.1,
+            n_iter_no_change=10,
+            tol=1e-07,
+            # verbose=0,
+            random_state=None,
         )
+
+        # model = RandomForestClassifier(
+        #     max_depth=7, random_state=0, n_estimators=10
+        # )
 
     elif m == "xgboost":
 
@@ -857,11 +875,11 @@ def score_data(train_data, X_train_data, Y_train_data, model, m) -> None:
     #     metrics.average_precision_score(y_true=Y_train_data, y_score=pred_proba)
     # )
 
-    importances = model.feature_importances_
-    forest_importances = pd.Series(
-        importances, index=train_data.drop(["Label"], axis=1).columns
-    )
-    #     print(forest_importances)
+    # importances = model.feature_importances_
+    # forest_importances = pd.Series(
+    #     importances, index=train_data.drop(["Label"], axis=1).columns
+    # )
+    # #     print(forest_importances)
 
     return pred, pred_proba
 
@@ -873,6 +891,7 @@ def fit(
     preds_format_path,
     preds_dest_path,
     m,
+    a,
 ) -> None:
 
     train_data, bank_data = load_data(
@@ -897,9 +916,14 @@ def fit(
     )
 
     # Creating predictions format file
-    create_pred_format(
-        preds_format_path=preds_format_path, dt=train_data, suffix="train"
-    )
+    if a == 1:
+        create_pred_format(
+            preds_format_path=preds_format_path, dt=train_data, suffix="train_1"
+        )
+    else:
+        create_pred_format(
+            preds_format_path=preds_format_path, dt=train_data, suffix="train_2"
+        )
 
     # Feature engineering
 
@@ -960,11 +984,16 @@ def fit(
         model=model,
         m=m,
     )
-
-    # formatted predictions file
-    preds = pd.read_csv(
-        preds_format_path + "/train_pred_format.csv"
-    )  # ,index_col='MessageId')
+    if a == 1:
+        # formatted predictions file
+        preds = pd.read_csv(
+            preds_format_path + "/train_1_pred_format.csv"
+        )  # ,index_col='MessageId')
+    else:
+        # formatted predictions file
+        preds = pd.read_csv(
+            preds_format_path + "/train_2_pred_format.csv"
+        )  # ,index_col='MessageId')
     preds.loc[:, "Score"] = pred_proba
 
     # save below
@@ -983,6 +1012,7 @@ def predict(
     preds_format_path,
     preds_dest_path,
     m,
+    a,
 ) -> None:
 
     train_data, bank_data = load_data(
@@ -1007,9 +1037,14 @@ def predict(
     )
 
     # Creating predictions format file
-    create_pred_format(
-        preds_format_path=preds_format_path, dt=train_data, suffix="test"
-    )
+    if a == 1:
+        create_pred_format(
+            preds_format_path=preds_format_path, dt=train_data, suffix="test_1"
+        )
+    else:
+        create_pred_format(
+            preds_format_path=preds_format_path, dt=train_data, suffix="test_2"
+        )
 
     # Feature engineering
 
@@ -1058,16 +1093,31 @@ def predict(
     )
     X_train_data = scaler.transform(X_train_data)
 
-    #     # load the model from disk
-    #     model = pickle.load(open(model_dir + '/finalized_model_' + m + '.sav', 'rb'))
+    # load the model from disk
+    model = pickle.load(
+        open(model_dir + "/finalized_model_" + m + ".sav", "rb")
+    )
 
-    #     # score on train data
-    #     pred, pred_proba = score_data(train_data = train_data_2, X_train_data = X_train_data, Y_train_data = Y_train_data, model = model, m=m)
+    # score on train data
+    pred, pred_proba = score_data(
+        train_data=train_data_2,
+        X_train_data=X_train_data,
+        Y_train_data=Y_train_data,
+        model=model,
+        m=m,
+    )
+    if a == 1:
+        # format predictions file
+        preds = pd.read_csv(
+            preds_format_path + "/test_1_pred_format.csv"
+        )  # ,index_col='MessageId')
+    else:
+        # format predictions file
+        preds = pd.read_csv(
+            preds_format_path + "/test_2_pred_format.csv"
+        )  # ,index_col='MessageId')
+    preds.loc[:, "Score"] = pred_proba
 
-    #     # format predictions file
-    #     preds = pd.read_csv(preds_format_path + '/test_pred_format.csv')#,index_col='MessageId')
-    #     preds.loc[:,'Score'] = pred_proba
-
-    #     # save below
-    #     preds.to_csv(preds_dest_path + '/centralized_test_predictions_' + m + '.csv')
+    # save below
+    # preds.to_csv(preds_dest_path + '/centralized_test_predictions_' + m + '.csv')
     return X_train_data, Y_train_data
