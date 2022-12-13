@@ -54,6 +54,15 @@ x_test,y_test = funcs.predict(
                     m = 'xgboost'
                     )   
 
+# Load and compile Keras model
+model = keras.Sequential([
+    keras.layers.Flatten(input_shape=(28,28)),
+    keras.layers.Dense(128, activation='relu'),
+    keras.layers.Dense(256, activation='relu'),
+    keras.layers.Dense(10, activation='softmax')
+])
+model.compile("adam", "sparse_categorical_crossentropy", metrics=["accuracy"])
+
 # Define Flower client
 class FlowerClient(fl.client.NumPyClient):
     def get_parameters(self,config):
