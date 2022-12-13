@@ -32,6 +32,7 @@ datapathjsonString = "data/fincrime/centralized/train/trail_data_1.json"
 swift_data_path = funcs.json_to_dict(datapathjsonString)["swift_data_path"]
 bank_data_path = funcs.json_to_dict(datapathjsonString)["bank_data_path"]
 
+<<<<<<< HEAD
 x_train, y_train, model = funcs.fit(
     swift_data_path=swift_data_path,
     bank_data_path=bank_data_path,
@@ -106,6 +107,62 @@ x_test, y_test = funcs.predict(
 # # save below
 # preds.to_csv(preds_dest_path + "/centralized_test_predictions_" + m + ".csv")
 
+=======
+x_train,y_train = funcs.fit(swift_data_path = swift_data_path,
+                    bank_data_path = bank_data_path,
+                    model_dir = model_dir,
+                    preds_format_path = preds_format_path,
+                    preds_dest_path = preds_dest_path,
+                    m = 'xgboost')
+
+
+# predict on test data
+datapathjsonString = 'data/fincrime/centralized/test/trail_data_1.json'
+swift_data_path = funcs.json_to_dict(datapathjsonString)['swift_data_path']
+bank_data_path = funcs.json_to_dict(datapathjsonString)['bank_data_path']
+
+x_test,y_test = funcs.predict(
+                    swift_data_path =swift_data_path,
+                    bank_data_path = bank_data_path,
+                    model_dir = model_dir,
+                    preds_format_path = preds_format_path,
+                    preds_dest_path = preds_dest_path,
+                    m = 'xgboost'
+                    )   
+>>>>>>> c252d81516354dc8d43ca0efc2d3ac4a13fa70b9
+
+# preds_format_path = '/mnt/d/fincrime-federated/prediction/fincrime/prediction_format'
+# preds_dest_path = '/mnt/d/fincrime-federated/prediction/fincrime/prediction'
+
+# Fit the model on data
+model = funcs.train_model(X_train_data=X_train_data, Y_train_data = Y_train_data, m=m)
+
+# score on train data
+pred, pred_proba = funcs.score_data(train_data = train_data_2,X_train_data = X_train_data, Y_train_data = Y_train_data, model = model, m = m)
+
+# formatted predictions file
+preds = pd.read_csv(preds_format_path + '/train_pred_format.csv')#,index_col='MessageId')
+preds.loc[:,'Score'] = pred_proba
+
+# save below
+pickle.dump(scaler, open(model_dir + '/finalized_scaler_' + m + '.sav', 'wb'))
+pickle.dump(model, open(model_dir + '/finalized_model_' + m + '.sav', 'wb'))
+# preds.to_csv(preds_dest_path + '/centralized_train_predictions_' + m + '.csv')
+# model.compile("adam", "sparse_categorical_crossentropy", metrics=["accuracy"])
+
+
+# load the model from disk
+model = pickle.load(open(model_dir + '/finalized_model_' + m + '.sav', 'rb'))
+
+# score on train data
+pred, pred_proba = score_data(train_data = train_data_2, X_train_data = X_train_data, Y_train_data = Y_train_data, model = model, m=m)
+
+# format predictions file
+preds = pd.read_csv(preds_format_path + '/test_pred_format.csv')#,index_col='MessageId')
+preds.loc[:,'Score'] = pred_proba
+
+# save below
+preds.to_csv(preds_dest_path + '/centralized_test_predictions_' + m + '.csv')
 
 # Define Flower client
 class FlowerClient(fl.client.NumPyClient):
