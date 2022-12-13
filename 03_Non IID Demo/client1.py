@@ -107,11 +107,15 @@ x_test, y_test = funcs.predict(
 
 # Define Flower client
 class FlowerClient(fl.client.NumPyClient):
-    def get_parameters(self, config):
-        return model.get_weights()
+    # def get_parameters(self, config):
+    #     return model.get_weights()
+
+    # def get_parameters(self, config):
+    #     # print(f"[Client {self.cid}] get_parameters")
+    #     return get_parameters(self)
 
     def fit(self, parameters, config):
-        model.set_weights(parameters)
+        # model.set_weights(parameters)
         r = model.fit(
             x_train,
             y_train,
@@ -121,10 +125,11 @@ class FlowerClient(fl.client.NumPyClient):
         )
         hist = r.history
         print("Fit history : ", hist)
-        return model.get_weights(), len(x_train), {}
+        return len(x_train), {}
+        # return model.get_weights(), len(x_train), {}
 
     def evaluate(self, parameters, config):
-        model.set_weights(parameters)
+        # model.set_weights(parameters)
         loss, accuracy = model.evaluate(x_test, y_test, verbose=0)
         print("Eval accuracy : ", accuracy)
         return loss, len(x_test), {"accuracy": accuracy}
