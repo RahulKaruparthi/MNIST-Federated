@@ -32,7 +32,7 @@ datapathjsonString = "data/fincrime/centralized/train/trail_data_2.json"
 swift_data_path = funcs.json_to_dict(datapathjsonString)["swift_data_path"]
 bank_data_path = funcs.json_to_dict(datapathjsonString)["bank_data_path"]
 
-X_train,Y_train = funcs.fit(swift_data_path = swift_data_path,
+x_train,y_train = funcs.fit(swift_data_path = swift_data_path,
                     bank_data_path = bank_data_path,
                     model_dir = model_dir,
                     preds_format_path = preds_format_path,
@@ -45,7 +45,7 @@ datapathjsonString = 'data/fincrime/centralized/test/trail_data2.json'
 swift_data_path = funcs.json_to_dict(datapathjsonString)['swift_data_path']
 bank_data_path = funcs.json_to_dict(datapathjsonString)['bank_data_path']
 
-X_test,Y_test = funcs.predict(
+x_test,y_test = funcs.predict(
                     swift_data_path =swift_data_path,
                     bank_data_path = bank_data_path,
                     model_dir = model_dir,
