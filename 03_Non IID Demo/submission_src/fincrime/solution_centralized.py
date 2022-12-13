@@ -852,9 +852,10 @@ def score_data(train_data, X_train_data, Y_train_data, model, m) -> None:
 
     pred_proba = model.predict_proba(X_train_data)[:, 1]
     #     print("AUPRC:", metrics.average_precision_score(y_true=Y_train_data, y_score=pred_proba))
-    print(
-        metrics.average_precision_score(y_true=Y_train_data, y_score=pred_proba)
-    )
+
+    # print(
+    #     metrics.average_precision_score(y_true=Y_train_data, y_score=pred_proba)
+    # )
 
     importances = model.feature_importances_
     forest_importances = pd.Series(
@@ -946,21 +947,33 @@ def fit(
     scaler.fit(X_train_data)
     X_train_data = scaler.transform(X_train_data)
 
-    #     # Fit the model on data
-    #     model = train_model(X_train_data=X_train_data, Y_train_data = Y_train_data, m=m)
+    # Fit the model on data
+    model = train_model(
+        X_train_data=X_train_data, Y_train_data=Y_train_data, m=m
+    )
 
-    #     # score on train data
-    #     pred, pred_proba = score_data(train_data = train_data_2,X_train_data = X_train_data, Y_train_data = Y_train_data, model = model, m = m)
+    # score on train data
+    pred, pred_proba = score_data(
+        train_data=train_data_2,
+        X_train_data=X_train_data,
+        Y_train_data=Y_train_data,
+        model=model,
+        m=m,
+    )
 
-    #     # formatted predictions file
-    #     preds = pd.read_csv(preds_format_path + '/train_pred_format.csv')#,index_col='MessageId')
-    #     preds.loc[:,'Score'] = pred_proba
+    # formatted predictions file
+    preds = pd.read_csv(
+        preds_format_path + "/train_pred_format.csv"
+    )  # ,index_col='MessageId')
+    preds.loc[:, "Score"] = pred_proba
 
-    #     # save below
-    #     pickle.dump(scaler, open(model_dir + '/finalized_scaler_' + m + '.sav', 'wb'))
-    #     pickle.dump(model, open(model_dir + '/finalized_model_' + m + '.sav', 'wb'))
-    #     # preds.to_csv(preds_dest_path + '/centralized_train_predictions_' + m + '.csv')
-    return X_train_data, Y_train_data
+    # save below
+    pickle.dump(
+        scaler, open(model_dir + "/finalized_scaler_" + m + ".sav", "wb")
+    )
+    pickle.dump(model, open(model_dir + "/finalized_model_" + m + ".sav", "wb"))
+    # preds.to_csv(preds_dest_path + '/centralized_train_predictions_' + m + '.csv')
+    return X_train_data, Y_train_data, model
 
 
 def predict(
