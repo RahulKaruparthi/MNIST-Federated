@@ -38,7 +38,7 @@ x_train, y_train, model = funcs.fit(
     model_dir=model_dir,
     preds_format_path=preds_format_path,
     preds_dest_path=preds_dest_path,
-    m="xgboost",
+    m="rf",
 )
 
 
@@ -53,7 +53,7 @@ x_test, y_test = funcs.predict(
     model_dir=model_dir,
     preds_format_path=preds_format_path,
     preds_dest_path=preds_dest_path,
-    m="xgboost",
+    m="rf",
 )
 
 # # Fit the model on data
