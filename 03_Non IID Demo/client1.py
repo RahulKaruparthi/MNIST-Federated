@@ -33,6 +33,10 @@ preds_format_path = (
 )
 preds_dest_path = "/mnt/d/fincrime-federated/prediction/fincrime/prediction"
 
+# predict on train data
+datapathjsonString = 'data/fincrime/centralized/train/trail_data_2.json'
+swift_data_path = funcs.json_to_dict(datapathjsonString)['swift_data_path']
+bank_data_path = funcs.json_to_dict(datapathjsonString)['bank_data_path']
 
 x_train,y_train = funcs.fit(swift_data_path = swift_data_path,
                     bank_data_path = bank_data_path,
