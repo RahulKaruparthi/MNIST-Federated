@@ -584,7 +584,7 @@ import pandas as pd
 import sklearn.utils
 from pandas import Int64Index, MultiIndex
 from sklearn import metrics
-from sklearn.ensemble import HistGradientBoostingClassifier
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import (
     accuracy_score,
     classification_report,
@@ -822,28 +822,28 @@ def create_features(df, model_dir, map_from_train_set=False):
 def train_model(X_train_data, Y_train_data, m) -> None:
 
     if m == "rf":
-        model = HistGradientBoostingClassifier(
-            loss="log_loss",
-            learning_rate=0.1,
-            max_iter=10,
-            max_leaf_nodes=31,
-            max_depth=None,
-            min_samples_leaf=20,
-            l2_regularization=0.0,
-            max_bins=255,
-            warm_start=False,
-            early_stopping="auto",
-            scoring="loss",
-            validation_fraction=0.1,
-            n_iter_no_change=10,
-            tol=1e-07,
-            # verbose=0,
-            random_state=None,
-        )
-
-        # model = RandomForestClassifier(
-        #     max_depth=7, random_state=0, n_estimators=10
+        # model = HistGradientBoostingClassifier(
+        #     loss="log_loss",
+        #     learning_rate=0.1,
+        #     max_iter=10,
+        #     max_leaf_nodes=31,
+        #     max_depth=None,
+        #     min_samples_leaf=20,
+        #     l2_regularization=0.0,
+        #     max_bins=255,
+        #     warm_start=False,
+        #     early_stopping="auto",
+        #     scoring="loss",
+        #     validation_fraction=0.1,
+        #     n_iter_no_change=10,
+        #     tol=1e-07,
+        #     # verbose=0,
+        #     random_state=None,
         # )
+
+        model = RandomForestClassifier(
+            max_depth=7, random_state=0, n_estimators=10
+        )
 
     elif m == "xgboost":
 
