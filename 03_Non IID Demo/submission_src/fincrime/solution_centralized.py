@@ -1002,7 +1002,7 @@ def fit(
     )
     pickle.dump(model, open(model_dir + "/finalized_model_" + m + ".sav", "wb"))
     # preds.to_csv(preds_dest_path + '/centralized_train_predictions_' + m + '.csv')
-    return X_train_data, Y_train_data, model
+    return X_train_data, Y_train_data
 
 
 def predict(
