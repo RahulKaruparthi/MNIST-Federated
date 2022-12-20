@@ -2,20 +2,17 @@ import importlib
 import os
 import sys
 import time
+import warnings
 
 import flwr as fl
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 import tensorflow as tf
-from tensorflow import keras
-
-import warnings
-
+import utils
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import log_loss
-
-import utils
+from tensorflow import keras
 
 import submission_src.fincrime.solution_centralized as funcs
 
@@ -34,35 +31,39 @@ preds_format_path = (
 preds_dest_path = "/mnt/d/fincrime-federated/prediction/fincrime/prediction"
 
 # predict on train data
-datapathjsonString = 'data/fincrime/centralized/train/trail_data_2.json'
-swift_data_path = funcs.json_to_dict(datapathjsonString)['swift_data_path']
-bank_data_path = funcs.json_to_dict(datapathjsonString)['bank_data_path']
+datapathjsonString = "data/fincrime/centralized/train/trail_data_2.json"
+swift_data_path = funcs.json_to_dict(datapathjsonString)["swift_data_path"]
+bank_data_path = funcs.json_to_dict(datapathjsonString)["bank_data_path"]
 
-x_train,y_train = funcs.fit(swift_data_path = swift_data_path,
-                    bank_data_path = bank_data_path,
-                    model_dir = model_dir,
-                    preds_format_path = preds_format_path,
-                    preds_dest_path = preds_dest_path,
-                    m = 'xgboost')
+x_train, y_train = funcs.fit(
+    swift_data_path=swift_data_path,
+    bank_data_path=bank_data_path,
+    model_dir=model_dir,
+    preds_format_path=preds_format_path,
+    preds_dest_path=preds_dest_path,
+    m="rf",
+    a=1,
+)
 
 
 # predict on test data
-datapathjsonString = 'data/fincrime/centralized/test/trail_data_1.json'
-swift_data_path = funcs.json_to_dict(datapathjsonString)['swift_data_path']
-bank_data_path = funcs.json_to_dict(datapathjsonString)['bank_data_path']
+datapathjsonString = "data/fincrime/centralized/test/trail_data_1.json"
+swift_data_path = funcs.json_to_dict(datapathjsonString)["swift_data_path"]
+bank_data_path = funcs.json_to_dict(datapathjsonString)["bank_data_path"]
 
-x_test,y_test = funcs.predict(
-                    swift_data_path =swift_data_path,
-                    bank_data_path = bank_data_path,
-                    model_dir = model_dir,
-                    preds_format_path = preds_format_path,
-                    preds_dest_path = preds_dest_path,
-                    m = 'xgboost'
-                    )   
+x_test, y_test = funcs.predict(
+    swift_data_path=swift_data_path,
+    bank_data_path=bank_data_path,
+    model_dir=model_dir,
+    preds_format_path=preds_format_path,
+    preds_dest_path=preds_dest_path,
+    m="rf",
+    a=1,
+)
 
 if __name__ == "__main__":
 
-    #(X_train, y_train), (X_test, y_test) = utils.load_mnist()
+    # (X_train, y_train), (X_test, y_test) = utils.load_mnist()
 
     partition_id = np.random.choice(10)
     (X_train, y_train) = utils.partition(x_train, y_train, 10)[partition_id]
@@ -100,12 +101,11 @@ class MnistClient(fl.client.NumPyClient):
         return loss, len(X_test), {"accuracy": accuracy}
 
 
-# # Start Flower client
-# fl.client.start_numpy_client(
-#     server_address="localhost:" + str(sys.argv[1]),
-#     client=FlowerClient(),
-#     grpc_max_message_length=1024 * 1024 * 1024,
-# )
+# Start Flower client
+fl.client.start_numpy_client(
+    server_address="localhost:" + str(sys.argv[1]),
+    client=MnistClient(),
+    grpc_max_message_length=1024 * 1024 * 1024,
+)
 
-fl.client.start_numpy_client("0.0.0.0:8080", client=MnistClient())
-
+# fl.client.start_numpy_client("0.0.0.0:8080", client=MnistClient())
