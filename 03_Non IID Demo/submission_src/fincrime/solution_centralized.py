@@ -585,6 +585,7 @@ import sklearn.utils
 from pandas import Int64Index, MultiIndex
 from sklearn import metrics
 from sklearn.ensemble import HistGradientBoostingClassifier
+from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import (
     accuracy_score,
     classification_report,
@@ -822,23 +823,29 @@ def create_features(df, model_dir, map_from_train_set=False):
 def train_model(X_train_data, Y_train_data, m) -> None:
 
     if m == "rf":
-        model = HistGradientBoostingClassifier(
-            loss="log_loss",
-            learning_rate=0.1,
-            max_iter=10,
-            max_leaf_nodes=31,
-            max_depth=None,
-            min_samples_leaf=20,
-            l2_regularization=0.0,
-            max_bins=255,
-            warm_start=False,
-            early_stopping="auto",
-            scoring="loss",
-            validation_fraction=0.1,
-            n_iter_no_change=10,
-            tol=1e-07,
-            # verbose=0,
-            random_state=None,
+        # model = HistGradientBoostingClassifier(
+        #     loss="log_loss",
+        #     learning_rate=0.1,
+        #     max_iter=10,
+        #     max_leaf_nodes=31,
+        #     max_depth=None,
+        #     min_samples_leaf=20,
+        #     l2_regularization=0.0,
+        #     max_bins=255,
+        #     warm_start=False,
+        #     early_stopping="auto",
+        #     scoring="loss",
+        #     validation_fraction=0.1,
+        #     n_iter_no_change=10,
+        #     tol=1e-07,
+        #     # verbose=0,
+        #     random_state=None,
+        # )
+
+        model = LogisticRegression(
+            penalty="l2",
+            max_iter=1,  # local epoch
+            warm_start=True,  # prevent refreshing weights when fitting
         )
 
         # model = RandomForestClassifier(
@@ -849,10 +856,10 @@ def train_model(X_train_data, Y_train_data, m) -> None:
 
         model = XGBClassifier(n_estimators=100)
 
-    kfold = StratifiedKFold(n_splits=5, random_state=0, shuffle=True)
-    cv_results = cross_val_score(
-        model, X_train_data, Y_train_data, cv=kfold, scoring="f1"
-    )
+        kfold = StratifiedKFold(n_splits=5, random_state=0, shuffle=True)
+        cv_results = cross_val_score(
+            model, X_train_data, Y_train_data, cv=kfold, scoring="f1"
+        )
 
     model.fit(X_train_data, Y_train_data)
     #     print("Minimum:", cv_results.min())
@@ -898,7 +905,10 @@ def fit(
         swift_data_path=swift_data_path, bank_data_path=bank_data_path
     )
 
-    train_data = train_data.iloc[0:500, :]
+    # train_data = train_data.iloc[0:500, :]
+
+    train_data = train_data.dropna(axis=0, how="any")
+
     # Merging with bank details
     train_data = pd.merge(
         train_data,
@@ -915,6 +925,8 @@ def fit(
         how="left",
         suffixes=["_order", "_ben"],
     )
+
+    train_data = train_data.dropna(axis=0)
 
     # Creating predictions format file
     if a == 1:
@@ -962,46 +974,50 @@ def fit(
     train_data_2 = train_data[cols_to_keep]
     #     print(train_data_2.head(3))
 
+    train_data_2 = train_data_2.dropna(axis=0)
+    train_data_2 = train_data_2.iloc[0:500, :]
+
     # Separate DV - IDV series
     Y_train_data = train_data_2["Label"].values
     X_train_data = train_data_2.drop(["Label"], axis=1).values
 
     # Normalize
 
-    scaler = StandardScaler()
-    scaler.fit(X_train_data)
-    X_train_data = scaler.transform(X_train_data)
+    # scaler = StandardScaler()
+    # scaler.fit(X_train_data)
+    # X_train_data = scaler.transform(X_train_data)
 
     # Fit the model on data
-    model = train_model(
-        X_train_data=X_train_data, Y_train_data=Y_train_data, m=m
-    )
+    # model = train_model(
+    #     X_train_data=X_train_data, Y_train_data=Y_train_data, m=m
+    # )
 
     # score on train data
-    pred, pred_proba = score_data(
-        train_data=train_data_2,
-        X_train_data=X_train_data,
-        Y_train_data=Y_train_data,
-        model=model,
-        m=m,
-    )
-    if a == 1:
-        # formatted predictions file
-        preds = pd.read_csv(
-            preds_format_path + "/train_1_pred_format.csv"
-        )  # ,index_col='MessageId')
-    else:
-        # formatted predictions file
-        preds = pd.read_csv(
-            preds_format_path + "/train_2_pred_format.csv"
-        )  # ,index_col='MessageId')
-    preds.loc[:, "Score"] = pred_proba
+    # pred, pred_proba = score_data(
+    #     train_data=train_data_2,
+    #     X_train_data=X_train_data,
+    #     Y_train_data=Y_train_data,
+    #     model=model,
+    #     m=m,
+    # )
+    # if a == 1:
+    #     # formatted predictions file
+    #     preds = pd.read_csv(
+    #         preds_format_path + "/train_1_pred_format.csv"
+    #     )  # ,index_col='MessageId')
+    # else:
+    #     # formatted predictions file
+    #     preds = pd.read_csv(
+    #         preds_format_path + "/train_2_pred_format.csv"
+    #     )  # ,index_col='MessageId')
 
-    # save below
-    pickle.dump(
-        scaler, open(model_dir + "/finalized_scaler_" + m + ".sav", "wb")
-    )
-    pickle.dump(model, open(model_dir + "/finalized_model_" + m + ".sav", "wb"))
+    # preds.loc[:, "Score"] = pred_proba
+
+    # # save below
+    # pickle.dump(
+    #     scaler, open(model_dir + "/finalized_scaler_" + m + ".sav", "wb")
+    # )
+    # pickle.dump(model, open(model_dir + "/finalized_model_" + m + ".sav", "wb"))
     # preds.to_csv(preds_dest_path + '/centralized_train_predictions_' + m + '.csv')
     return X_train_data, Y_train_data
 
@@ -1020,6 +1036,10 @@ def predict(
         swift_data_path=swift_data_path, bank_data_path=bank_data_path
     )
 
+    # train_data = train_data.iloc[0:500, :]
+
+    train_data = train_data.dropna(axis=0)
+
     # Merging with bank details
     train_data = pd.merge(
         train_data,
@@ -1036,6 +1056,8 @@ def predict(
         how="left",
         suffixes=["_order", "_ben"],
     )
+
+    train_data = train_data.dropna(axis=0)
 
     # Creating predictions format file
     if a == 1:
@@ -1083,16 +1105,28 @@ def predict(
     train_data_2 = train_data[cols_to_keep]
     #     print(train_data_2.head(3))
 
+    train_data_2 = train_data_2.dropna(axis=0)
+    train_data_2 = train_data_2.iloc[0:500, :]
+
+    # X_train_data = X_train_data.dropna(axis=0)
+    # Y_train_data = Y_train_data.dropna(axis=0)
+
+    Y_train_data = train_data_2["Label"]
+    X_train_data = train_data_2.drop(["Label"], axis=1)
+
     # Separate DV - IDV series
 
-    Y_train_data = train_data_2["Label"].values
-    X_train_data = train_data_2.drop(["Label"], axis=1).values
+    # Y_train_data = train_data_2["Label"].values
+    Y_train_data = Y_train_data.values
+    # X_train_data = train_data_2.drop(["Label"], axis=1).values
+    X_train_data = X_train_data.values
 
     # load scaler from disk
     scaler = pickle.load(
         open(model_dir + "/finalized_scaler_" + m + ".sav", "rb")
     )
-    X_train_data = scaler.transform(X_train_data)
+
+    # X_train_data = scaler.transform(X_train_data)
 
     # load the model from disk
     model = pickle.load(
@@ -1100,24 +1134,24 @@ def predict(
     )
 
     # score on train data
-    pred, pred_proba = score_data(
-        train_data=train_data_2,
-        X_train_data=X_train_data,
-        Y_train_data=Y_train_data,
-        model=model,
-        m=m,
-    )
-    if a == 1:
-        # format predictions file
-        preds = pd.read_csv(
-            preds_format_path + "/test_1_pred_format.csv"
-        )  # ,index_col='MessageId')
-    else:
-        # format predictions file
-        preds = pd.read_csv(
-            preds_format_path + "/test_2_pred_format.csv"
-        )  # ,index_col='MessageId')
-    preds.loc[:, "Score"] = pred_proba
+    # pred, pred_proba = score_data(
+    #     train_data=train_data_2,
+    #     X_train_data=X_train_data,
+    #     Y_train_data=Y_train_data,
+    #     model=model,
+    #     m=m,
+    # )
+    # if a == 1:
+    #     # format predictions file
+    #     preds = pd.read_csv(
+    #         preds_format_path + "/test_1_pred_format.csv"
+    #     )  # ,index_col='MessageId')
+    # else:
+    #     # format predictions file
+    #     preds = pd.read_csv(
+    #         preds_format_path + "/test_2_pred_format.csv"
+    #     )  # ,index_col='MessageId')
+    # preds.loc[:, "Score"] = pred_proba
 
     # save below
     # preds.to_csv(preds_dest_path + '/centralized_test_predictions_' + m + '.csv')
