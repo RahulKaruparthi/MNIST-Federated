@@ -898,6 +898,7 @@ def fit(
         swift_data_path=swift_data_path, bank_data_path=bank_data_path
     )
 
+    train_data = train_data.iloc[0:500, :]
     # Merging with bank details
     train_data = pd.merge(
         train_data,
