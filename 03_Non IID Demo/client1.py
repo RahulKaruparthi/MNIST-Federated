@@ -127,4 +127,4 @@ if __name__ == "__main__":
 #     )
 
 
-fl.client.start_numpy_client("0.0.0.0:8080", client=MnistClient())
+    fl.client.start_numpy_client("0.0.0.0:8080", client=MnistClient())
