@@ -122,10 +122,10 @@ if __name__ == "__main__":
             return loss, len(x_test), {"accuracy": accuracy}
 
     # Start Flower client
-    fl.client.start_numpy_client(
-        server_address="localhost:" + str(sys.argv[1]),
-        client=MnistClient(),
-        grpc_max_message_length=1024 * 1024 * 1024,
-    )
+#     fl.client.start_numpy_client(
+#         server_address="localhost:" + str(sys.argv[1]),
+#         client=MnistClient(),
+#         grpc_max_message_length=1024 * 1024 * 1024,
+#     )
 
-    # fl.client.start_numpy_client("0.0.0.0:8080", client=MnistClient())
+    fl.client.start_numpy_client("0.0.0.0:8080", client=MnistClient())
