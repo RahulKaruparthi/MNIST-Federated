@@ -45,10 +45,10 @@ tf.debugging.set_log_device_placement(False)
 #if you have it available at your machine. This unit will make your code run faster.
 # tf.config.experimental.list_physical_devices('GPU')  
 
-bank_df=pd.read_csv("D:/Federated Learning/bank_dataset/bank_dataset.csv")
+bank_df=pd.read_csv("/mnt/d/Federated Learning/bank_dataset/bank_dataset.csv")
 
 # bank_df.head()
-swift_df=pd.read_csv("D:/Federated Learning/swift_transaction_train_dataset/swift_transaction_train_dataset.csv",index_col="MessageId")
+swift_df=pd.read_csv("/mnt/d/Federated Learning/swift_transaction_train_dataset/swift_transaction_train_dataset.csv",index_col="MessageId")
 swift_df["Timestamp"] = swift_df["Timestamp"].astype("datetime64[ns]")
 # swift_df.head()
 swift_bank_df= pd.merge(
