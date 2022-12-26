@@ -85,6 +85,7 @@ if __name__ == "__main__":
         on_fit_config_fn=fit_round,
     )
     fl.server.start_server(server_address="0.0.0.0:8080", strategy=strategy, config=fl.server.ServerConfig(num_rounds=3))
+    fl.server.start_server(server_address="0.0.0.0:8080", strategy=strategy, config=fl.server.ServerConfig(num_rounds=3))
 
     # Start Flower server for three rounds of federated learning
     # fl.server.start_server(
