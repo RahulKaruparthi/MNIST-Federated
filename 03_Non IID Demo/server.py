@@ -84,15 +84,15 @@ if __name__ == "__main__":
         evaluate_fn=get_evaluate_fn(model),
         on_fit_config_fn=fit_round,
     )
-    # fl.server.start_server(server_address="0.0.0.0:8080", strategy=strategy, config=fl.server.ServerConfig(num_rounds=3))
+    fl.server.start_server(server_address="0.0.0.0:8080", strategy=strategy, config=fl.server.ServerConfig(num_rounds=3))
 
     # Start Flower server for three rounds of federated learning
-    fl.server.start_server(
-        server_address="localhost:" + str(sys.argv[1]),
-        config=fl.server.ServerConfig(num_rounds=3),
-        grpc_max_message_length=1024 * 1024 * 1024,
-        strategy=strategy,
-    )
+    # fl.server.start_server(
+    #     server_address="localhost:" + str(sys.argv[1]),
+    #     config=fl.server.ServerConfig(num_rounds=3),
+    #     grpc_max_message_length=1024 * 1024 * 1024,
+    #     strategy=strategy,
+    # )
 
     # # Start Flower client
     # fl.client.start_numpy_client(

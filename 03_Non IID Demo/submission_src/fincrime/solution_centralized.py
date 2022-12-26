@@ -610,9 +610,11 @@ def json_to_dict(datapathjsonString):
 
 
 def load_data(swift_data_path, bank_data_path):
-    swift_data = pd.read_csv(swift_data_path, index_col="MessageId")
+    swift_data = pd.read_csv(
+        swift_data_path, index_col="MessageId", low_memory=False
+    )
     swift_data["Timestamp"] = swift_data["Timestamp"].astype("datetime64[ns]")
-    bank_data = pd.read_csv(bank_data_path)
+    bank_data = pd.read_csv(bank_data_path, low_memory=False)
     return swift_data, bank_data
 
 
